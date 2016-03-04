@@ -35,7 +35,6 @@ function($stateProvider, $urlRouterProvider) {
 }]);
 
 
-	console.log(io.rooms);
 
 
 /* category service that can be injected */

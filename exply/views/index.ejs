@@ -23,26 +23,6 @@
 
 
 
-
-
-
-<script type="text/ng-template" id="/chatList.html">
-  <div>
-  	<div ng-repeat="chat in category.loggedChats">
-        {{chat}}
-        </div>
-  </div>
-
-</script>
-<script type="text/ng-template" id="/activeChatList.html">
-  <div>
-  	<div ng-repeat="chat in category.activeChats">
-        {{chat}}
-        </div>
-
-  </div>
-
-
 <script>
 
 
@@ -53,16 +33,10 @@
 
 
 <script type="text/ng-template" id="/home.html">
-<div class="container" ng-controller="MainCtrl">
-<div class="categories" ng-repeat="category in categories | orderBy: '-activeChatCount'">
-  {{category.title}} has {{category.activeChats.length}} active chats and {{category.loggedChats.length}} logged chats.
-   <!-- this is a button placeholder for testing the chat adding function in chatListCtrl -->
- <!-- <div class="button-holder" ng-controller="chatListCtrl">
-<button ng-click="addChatLog()">test</button> -->
-<a href="#/{{$index}}/activelist"> View active chats. </a>
-<a href="#/{{$index}}/loglist"> View logged chats. </a>
 
 
+
+//maybe put room in rooms for ng repeat here, making categories dynamic.
 
 </div>
 <div><a href="#" onclick="switchCategory('lobby')">lobby</a></di>
@@ -98,7 +72,7 @@
   socket.on('updateusers', function(data) {
     $('#users').empty();
     $.each(data, function(key, value) {
-      $('#users').append('<div>' + key + '</div>');
+      $('#users').append('<div>' + value + '</div>');
     });
   });
 
@@ -107,12 +81,13 @@
     $('#rooms').empty();
     //console.log(category);
     
+    //this controls how categories and rooms are displayed to the user.
     var currentCategory = category
     $.each(rooms, function(key, value) {
      
      $.each(value, function(key,value){
-      if(key === currentCategory
-        ){
+      if(key === currentCategory){
+
         $.each(value, function(key,value){
           if(value == current_room){
 

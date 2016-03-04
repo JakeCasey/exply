@@ -1,11 +1,10 @@
 //socket io stuff
 module.exports = function(io){
 
+var mongoose = require('mongoose');
+var Chat = mongoose.model('Chat');
+
 var usernames = {};
-
-var permanentLog = [];
-
-var tempLog = [];
 
 var rooms = [
 
@@ -18,8 +17,8 @@ var rooms = [
 ]
 
 
-
 io.sockets.on('connection', function (socket) {
+  
 
   // when the client emits 'adduser', this listens and executes
   socket.on('adduser', function(username){
@@ -43,16 +42,29 @@ io.sockets.on('connection', function (socket) {
 
   // when the client emits 'sendchat', this listens and executes
   socket.on('sendchat', function (data) {
-    // we tell the client to execute 'updatechat' with 2 parameters
-    io.sockets.in(socket.room).emit('updatechat', socket.username, data);
-    var key = socket.username;
-    var obj = {}
-    obj[key] = data;
-    tempLog.push(obj);
+
+  //currently the db is written to every time a user sends a message.
+  //this needs to be batched into larger groups using http://stackoverflow.com/questions/16726330/mongoose-mongodb-batch-insert?
+
+    var newMsg = new Chat({
+      username: socket.username,
+      content: data,
+      room: socket.room,
+      created: new Date()
+    });
+
+    //Save it to database
+    newMsg.save(function(err, msg){
+            //Send message to those connected in the room
+          io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+        });
+
     //console.log(tempLog);
   });
 
   socket.on('switchRoom', function(newroom){
+
+
     // leave the current room (stored in session)
     socket.leave(socket.room);
     // join new room, received as function parameter
@@ -64,11 +76,22 @@ io.sockets.on('connection', function (socket) {
     socket.room = newroom;
     socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
     socket.emit('updaterooms', rooms, newroom, socket.category);
-    // Not sure, need to fix how users update in UI.
-    //io.sockets.emit('updateusers', usernames);
+
+
+// This function grabs the ID of the sockets in the room, then pushes them into the sockets array
+// which is then displayed to the user whilst in a room. Updates on user entry/leave, via 'updateusers'
+   function roomSockets(roomId) {
+    var clients = io.nsps['/'].adapter.rooms[roomId].sockets,
+        sockets = [];
+    for (var clientId in clients) sockets.push(io.sockets.connected[clientId].username);
+    return sockets;
+}
+console.log(roomSockets(socket.room))
+var usernames = roomSockets(socket.room)
+    io.sockets.emit('updateusers', usernames);
   });
 
-
+//use this to distinguish between catagory and lobbies
   socket.on('switchCategory', function(newCategory){
     if(newCategory == 'lobby'){
       socket.emit('updaterooms', rooms, 'lobby', newCategory);

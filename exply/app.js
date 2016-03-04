@@ -4,10 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+require('./models/Chats');
+
+mongoose.connect('mongodb://localhost/exply');
 
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+
 
 var app = require('express')();
 var server = require('http').Server(app);
@@ -63,6 +68,17 @@ app.use(function(err, req, res, next) {
 
 require('./sockets/base')(io);
 
+
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+  if (req.method == 'OPTIONS') {
+    res.status(200).end();
+  } else {
+    next();
+  }
+});
 
 
 

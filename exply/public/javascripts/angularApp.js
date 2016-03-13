@@ -1,9 +1,8 @@
-var app = angular.module('exply', ['ui.router']);/*
+var app = angular.module('exply', ['ui.router','btford.socket-io']);/*
 * exply Module
 *
 * Description
 */
-
 
 app.config([
 
@@ -15,7 +14,13 @@ function($stateProvider, $urlRouterProvider) {
     .state('home', {
       url: '/home',
       templateUrl: '/home.html',
-      controller: 'MainCtrl'
+      controller: 'socketCtrl',
+      resolve: {
+      	catPromise: ['categories', function(categories){
+      		console.log(categories.getAll())
+      		return categories.getAll();
+      	}]
+      }
     });
 
      $stateProvider
@@ -34,29 +39,36 @@ function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('home');
 }]);
 
+app.factory('socket', function (socketFactory) {
+  return socketFactory();
+});
 
+var message = []
+
+app.controller('socketCtrl', ['socket','$scope', function(socket, $scope){
+	socket.on('sendchat', function(data){
+		
+		message.push(data);
+
+		$scope.message = message
+		console.log(message)
+	});
+	
+		
+  }])
 
 
 /* category service that can be injected */
-app.factory('categories', [function(){
+app.factory('categories', ['$http', function($http){
 
-	var o =  {
+	var o =  { };
 
-		categories:	[
-		{ title: "Science", activeChatCount: 0, loggedChats:
-		[{chat: "this is a chat log"}], activeChats: [{chat: "this is an active chat room"}]
-		 }, 
-		{ title: "Math", activeChatCount: 0, loggedChats:
-		[{chat: "this is a chat log"}, {chat: "this is a chat log"}], activeChats: [{chat: "this is an active chat room"}]
-		 }, 
-		{ title: "History", activeChatCount: 0, loggedChats:
-		[{chat: "this is a chat log"}, {chat: "this is a chat log"}], activeChats: [{chat: "this is an active chat room"}]
-		 }, 
-		{ title: "Geography", activeChatCount: 0, loggedChats:
-		[{chat: "this is a chat log"}, {chat: "this is a log for Geography"}], activeChats: [{chat: "this is an active chat room"}]
-		 }, 
-		]
-
+	o.getAll = function() {
+		return $http.get('/categories').success(function(data){
+			console.log(data[0])
+			angular.copy(data[0], o);
+			console.log(o)
+		});
 	};
 
 	return o;
@@ -69,7 +81,9 @@ app.factory('categories', [function(){
 
 app.controller('MainCtrl',  ['$scope', 'categories', function($scope, categories){
 
-	$scope.categories= categories.categories;
+	$scope.categories = categories;
+	console.log(categories.categories)
+	
 	
 }]);
 
@@ -85,6 +99,7 @@ app.controller('chatListCtrl', ['$scope', '$stateParams', 'categories', function
 	};
 	
 }]);
+
 
 
 

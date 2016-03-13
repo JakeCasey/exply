@@ -5,7 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var http = require('http');
 require('./models/Chats');
+require('./models/Categories');
 
 mongoose.connect('mongodb://localhost/exply');
 
@@ -17,6 +19,8 @@ var users = require('./routes/users');
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+
+// io.sockets.on('connection', require('./routes/socket'));
 
 server.listen(8080);
 
@@ -66,7 +70,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
-require('./sockets/base')(io);
+require('./sockets/base')(io, app);
 
 
 app.all('*', function(req, res, next) {
@@ -85,5 +89,5 @@ app.all('*', function(req, res, next) {
 
 
 
-module.exports = app, io;
+module.exports = app, io
 

@@ -1,24 +1,27 @@
-//socket io stuff
 module.exports = function(io){
+
+
 
 var mongoose = require('mongoose');
 var Chat = mongoose.model('Chat');
-
+var Category = mongoose.model('Category');
 var usernames = {};
+var http = require('http');
+var Category = mongoose.model('Category');
+
 
 var rooms = [
 
-{'lobby':['lobby']},
-{'math': ['math1','math2','math3','math4']}, 
-{'history': ['history1','history2','history3','history4']},
-{'science': ['science1','science2','science3','science4']}, 
-{'programming': ['programming1','programming2','programming3','programming4']}
+// {'lobby':['lobby']},
+// {'math': ['math1','math2','math3','math4']}, 
+// {'history': ['history1','history2','history3','history4']},
+// {'science': ['science1','science2','science3','science4']}, 
+// {'programming': ['programming1','programming2','programming3','programming4']}
 
 ]
 
 
 io.sockets.on('connection', function (socket) {
-  
 
   // when the client emits 'adduser', this listens and executes
   socket.on('adduser', function(username){
@@ -113,13 +116,8 @@ var usernames = roomSockets(socket.room)
     // echo globally that this client has left
     socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
     socket.leave(socket.room);
-     // When the chatroom is empty'd, take the temporary log and push it to console for now.
-    // Later this will push to db.
-    if(Object.keys(usernames).length === 0) {
-        permanentLog.push(tempLog);
-        //console.log(permanentLog)
-          };
+
+    
   });
 });
 };
-

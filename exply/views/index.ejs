@@ -2,12 +2,15 @@
 <html>
 <head>
 	<title>Html Test 2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
  	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
  	<script src="/javascripts/angularApp.js"></script>
+  <script src="/javascripts/socket.js"></script>
+
  	<script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+  
 
  	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
  	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
@@ -20,6 +23,8 @@
 
 <ui-view></ui-view>
 
+<div ng-controller="socketCtrl">
+</div>
 
 
 
@@ -32,20 +37,20 @@
 
 
 
+
 <script type="text/ng-template" id="/home.html">
 
 
-
-//maybe put room in rooms for ng repeat here, making categories dynamic.
-
-</div>
-<div><a href="#" onclick="switchCategory('lobby')">lobby</a></di>
-<div><a href="#" onclick="switchCategory('math')">math</a></di>
-</div>
-
-
+{{categories.name}}
+{{categories.rooms}}
 
 </div>
+
+
+<div><a href="#" onclick="switchCategory('lobby')">lobby</a></div>
+<div><a href="#" onclick="switchCategory('math')">math</a></div>
+
+
 </script>
 
 <!-- socket.io testing -->
@@ -99,8 +104,6 @@
 
         });
 
-
-
     };
 
   })
@@ -109,7 +112,7 @@
     });
 
 
-  function switchRoom(room){
+   function switchRoom(room){
     socket.emit('switchRoom', room);
   }
 

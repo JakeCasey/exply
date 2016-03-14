@@ -17,7 +17,6 @@ function($stateProvider, $urlRouterProvider) {
       controller: 'socketCtrl',
       resolve: {
       	catPromise: ['categories', function(categories){
-      		console.log(categories.getAll())
       		return categories.getAll();
       	}]
       }
@@ -40,19 +39,26 @@ function($stateProvider, $urlRouterProvider) {
 }]);
 
 app.factory('socket', function (socketFactory) {
-  return socketFactory();
+  return socketFactory({
+  			prefix: '',
+            ioSocket: io.connect('http://localhost:3000')
+        });
 });
 
 var message = []
 
 app.controller('socketCtrl', ['socket','$scope', function(socket, $scope){
-	socket.on('sendchat', function(data){
-		
-		message.push(data);
+	$scope.messages = [];
 
-		$scope.message = message
-		console.log(message)
-	});
+        socket.on('connect', function () {
+
+            socket.on('sendchat2', function(data) {
+                $scope.messages.push(data);
+                console.log($scope.messages)
+            });
+
+        });
+
 	
 		
   }])

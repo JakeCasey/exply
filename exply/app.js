@@ -12,6 +12,8 @@ require('./models/Categories');
 mongoose.connect('mongodb://localhost/exply');
 
 
+
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -20,9 +22,10 @@ var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+
 // io.sockets.on('connection', require('./routes/socket'));
 
-server.listen(8080);
+server.listen(3000);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

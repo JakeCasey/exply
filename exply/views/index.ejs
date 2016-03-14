@@ -58,7 +58,7 @@
 
  
 
-  var socket = io.connect('http://localhost:8080');
+  var socket = io.connect('http://localhost:3000');
 
 
 
@@ -128,6 +128,8 @@
       $('#data').val('');
       // tell server to execute 'sendchat' and send along one parameter
       socket.emit('sendchat', message);
+      socket.emit('sendchat2', message);
+
     });
 
     // when the client hits ENTER on their keyboard

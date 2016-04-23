@@ -14,7 +14,7 @@ function($stateProvider, $urlRouterProvider) {
     .state('home', {
       url: '/home',
       templateUrl: '/home.html',
-      controller: 'socketCtrl',
+      controller: 'MainCtrl',
       resolve: {
       	catPromise: ['categories', function(categories){
       		return categories.getAll();
@@ -48,16 +48,7 @@ app.factory('socket', function (socketFactory) {
 var message = []
 
 app.controller('socketCtrl', ['socket','$scope', function(socket, $scope){
-	$scope.messages = [];
-
-        socket.on('connect', function () {
-
-            socket.on('sendchat2', function(data) {
-                $scope.messages.push(data);
-                console.log($scope.messages)
-            });
-
-        });
+	
 
 	
 		
@@ -71,7 +62,7 @@ app.factory('categories', ['$http', function($http){
 
 	o.getAll = function() {
 		return $http.get('/categories').success(function(data){
-			console.log(data[0])
+			
 			angular.copy(data[0], o);
 			console.log(o)
 		});
@@ -88,7 +79,7 @@ app.factory('categories', ['$http', function($http){
 app.controller('MainCtrl',  ['$scope', 'categories', function($scope, categories){
 
 	$scope.categories = categories;
-	console.log(categories.categories)
+	console.log(categories)
 	
 	
 }]);

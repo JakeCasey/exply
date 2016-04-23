@@ -21,8 +21,16 @@ var rooms = [
 ]
 
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function (socket, rooms) {
+  socket.on('getCategories', function(categories){
 
+    var rooms = categories;
+    console.log(rooms)
+
+  });
+
+
+  console.log(rooms);
   // when the client emits 'adduser', this listens and executes
   socket.on('adduser', function(username){
     // store the username in the socket session for this client
